@@ -1,0 +1,59 @@
+{
+  "project": "lead intake",
+  "method": "two real HTTP POST calls through published n8n webhook",
+  "created": "created",
+  "duplicate": "updated",
+  "sameRecord": true,
+  "sourceCount": 2,
+  "elapsedMs": [
+    58,
+    31
+  ],
+  "responses": [
+    {
+      "elapsedMs": 58,
+      "response": {
+        "result": "created",
+        "lead": {
+          "id": 3,
+          "identity": "lead-1790321758935@example.test",
+          "name": "Example Lead",
+          "email": "lead-1790321758935@example.test",
+          "phone": "+593321758935",
+          "source": "website",
+          "language": "es",
+          "area": "norte",
+          "budget": 120000,
+          "owner": "Ana Torres",
+          "source_count": 1,
+          "created_at": "2026-09-25T07:35:58.976Z",
+          "updated_at": "2026-09-25T07:35:58.976Z"
+        },
+        "workflowFinishedAt": "2026-09-25T07:35:58.986Z"
+      }
+    },
+    {
+      "elapsedMs": 31,
+      "response": {
+        "result": "updated",
+        "lead": {
+          "id": 3,
+          "identity": "lead-1790321758935@example.test",
+          "name": "Example Lead",
+          "email": "lead-1790321758935@example.test",
+          "phone": "+593321758935",
+          "source": "portal-email",
+          "language": "es",
+          "area": "norte",
+          "budget": 130000,
+          "owner": "Ana Torres",
+          "source_count": 2,
+          "created_at": "2026-09-25T07:35:58.976Z",
+          "updated_at": "2026-09-25T07:35:59.012Z"
+        },
+        "workflowFinishedAt": "2026-09-25T07:35:59.020Z"
+      }
+    }
+  ],
+  "note": "synthetic test data; local SQLite, no commercial CRM connected"
+}

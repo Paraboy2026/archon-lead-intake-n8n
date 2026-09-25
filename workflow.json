@@ -1,0 +1,155 @@
+{
+  "name": "Portfolio 1 — Multi-source lead intake and persistent deduplication",
+  "nodes": [
+    {
+      "id": "6290787e-4465-465d-a809-4daca924e1b2",
+      "name": "ManualSample",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "parameters": {},
+      "position": [
+        0,
+        100
+      ]
+    },
+    {
+      "id": "3aea13c9-462e-4bb2-aaae-618881774782",
+      "name": "SampleData",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{json:{\"name\":\"María Fernanda\",\"email\":\"maria@example.test\",\"phone\":\"+593987654321\",\"source\":\"website\",\"language\":\"es\",\"area\":\"norte\",\"budget\":120000}}];"
+      },
+      "position": [
+        200,
+        100
+      ]
+    },
+    {
+      "id": "4bb60c46-39e7-4fb0-821f-74c91b3883e2",
+      "name": "Inbound",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "portfolio-lead-intake",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "id": "11e22319-fef4-4a55-beaf-1d7151b7275e",
+      "name": "Validate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const incoming=$input.first().json; const value=incoming.body && typeof incoming.body==='object'?incoming.body:incoming; for(const key of [\"source\"]) if(value[key]===undefined || value[key]===null || value[key]==='') throw new Error('Missing '+key); return [{json:value}];"
+      },
+      "position": [
+        430,
+        200
+      ]
+    },
+    {
+      "id": "b5d2a46d-0f63-4200-995d-7a7c9407b8fe",
+      "name": "PersistAndAutomate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:5711/ingest",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "position": [
+        670,
+        200
+      ]
+    },
+    {
+      "id": "51385af6-3c8c-403c-bd5f-31d2f86b79ab",
+      "name": "Evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return $input.all().map(item=>({json:{...item.json,workflowFinishedAt:new Date().toISOString()}}));"
+      },
+      "position": [
+        910,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "ManualSample": {
+      "main": [
+        [
+          {
+            "node": "SampleData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SampleData": {
+      "main": [
+        [
+          {
+            "node": "Validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inbound": {
+      "main": [
+        [
+          {
+            "node": "Validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate": {
+      "main": [
+        [
+          {
+            "node": "PersistAndAutomate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PersistAndAutomate": {
+      "main": [
+        [
+          {
+            "node": "Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}
